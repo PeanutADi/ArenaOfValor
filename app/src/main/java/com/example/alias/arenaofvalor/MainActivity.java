@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,6 +39,67 @@ public class MainActivity extends AppCompatActivity {
 
         heroes.add(h);
 
+        adapter = new MyAdapter(MainActivity.this, heroes);
+        ListView lv=findViewById(R.id.lw);
+        lv.setAdapter(adapter);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent intent=new Intent(MainActivity.this,Info.class);
+
+                intent.putExtra("hero",heroes.get(position));
+                startActivityForResult(intent,1);
+
+
+
+            }
+
+        });
+
+        final  AlertDialog dialog1 = new AlertDialog.Builder(this).create();//创建对话框
+
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                dialog1.setIcon(R.mipmap.ic_launcher);//设置对话框icon
+
+
+                dialog1.setMessage("Delete or not");//设置文字显示内容
+
+                dialog1.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();//关闭对话框
+                    }
+                });
+
+                dialog1.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        heroes.remove(position);
+                        adapter.notifyDataSetChanged();
+
+                        dialog.dismiss();//关闭对话框
+                    }
+                });
+
+
+                dialog1.show();
+
+
+
+
+
+                return true;
+            }
+        });
+
+
+
         Button add=findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,6 +126,17 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+                final EditText name=newView.findViewById(R.id.name);
+                final EditText alias=newView.findViewById(R.id.alias);
+                final EditText position=newView.findViewById(R.id.position);
+                final EditText live=newView.findViewById(R.id.live);
+                final EditText attack=newView.findViewById(R.id.attack);
+                final EditText skill=newView.findViewById(R.id.skill);
+                final EditText difficulty=newView.findViewById(R.id.difficulty);
+
+
+
+
 
 
 
@@ -72,6 +145,24 @@ public class MainActivity extends AppCompatActivity {
                 builder.setPositiveButton("确认添加", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+
+                        String _uri;
+                        if(uri==null) _uri="";
+                        else _uri=uri.toString();
+
+                        String _name=name.getText().toString();
+                        String _alias=alias.getText().toString();
+                        String _position=position.getText().toString();
+                        int _live= Integer.parseInt(live.getText().toString());
+                        int _attack= Integer.parseInt(attack.getText().toString());
+                        int _skill= Integer.parseInt(skill.getText().toString());
+                        int _difficulty= Integer.parseInt(difficulty.getText().toString());
+                        Hero h=new Hero(_uri,_name,_alias,_position,_live,_attack,_skill,_difficulty);
+
+                        heroes.add(h);
+
+                        adapter.notifyDataSetChanged();
+
 
                     }
                 });
@@ -92,24 +183,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        adapter = new MyAdapter(MainActivity.this, heroes);
-        ListView lv=findViewById(R.id.lw);
-        lv.setAdapter(adapter);
-
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Intent intent=new Intent(MainActivity.this,Info.class);
-
-                intent.putExtra("hero",heroes.get(position));
-                startActivityForResult(intent,1);
-
-
-
-            }
-
-        });
 
 
 
